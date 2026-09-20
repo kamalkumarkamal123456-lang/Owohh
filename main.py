@@ -2,16 +2,14 @@ import discord
 import random
 import asyncio
 import os
-import time
-from discord.ext import commands  # <--- YE LINE ADD KARO
 
 # Discord Intents Settings
 intents = discord.Intents.default()
 intents.messages = True
 intents.message_content = True
 
-# Bot Initialize (Bot ki jagah commands.Bot use kiya hai)
-bot = commands.Bot(intents=intents)
+# Bot Initialize (Client use kiya hai kyunki prefix nahi chahiye)
+bot = discord.Client(intents=intents)
 
 # --- CONFIGURATION AREA ---
 
@@ -22,6 +20,8 @@ GALLIES = [
     "nawabi", "kameena", "badmaash", "dhokebaaz", "jugaad"
 ]
 
+# Pattern: Kitni baar copy karega, phir gali dega. 
+# Example: [1, 3, 5] = 1 msg copy, phir 3 msg copy, phir 5 msg copy, phir gali.
 PATTERN = [1, 3, 5, 2, 4] 
 
 # --- INTERNAL STATE ---
@@ -32,11 +32,13 @@ current_count = 0
 @bot.event
 async def on_ready():
     print(f"Bot is ready! Logged in as: {bot.user}")
+    print(f"Connected to server: {bot.guilds[0].name if bot.guilds else 'No servers'}")
 
 @bot.event
 async def on_message(message):
     global current_count, pattern_index, messages_to_copy
 
+    # Bot khud ka message copy na kare
     if message.author == bot.user:
         return
 
