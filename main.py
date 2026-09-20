@@ -3,15 +3,15 @@ import random
 import asyncio
 import os
 
-# Discord Intents Settings
+# Self Bot ke liye intents ki zaroorat nahi hoti, par safety ke liye default rakhe hain
 intents = discord.Intents.default()
 intents.messages = True
 intents.message_content = True
 
-# Bot Initialize (Client use kiya hai kyunki prefix nahi chahiye)
+# Client use kar rahe hain kyunki ye self bot ke saath stable rehta hai
 bot = discord.Client(intents=intents)
 
-# --- CONFIGURATION AREA ---
+# --- CONFIGURATION ---
 
 GALLIES = [
     "sala", "bandar", "bewakoof", "chutiya", "gandgaa", 
@@ -20,11 +20,10 @@ GALLIES = [
     "nawabi", "kameena", "badmaash", "dhokebaaz", "jugaad"
 ]
 
-# Pattern: Kitni baar copy karega, phir gali dega. 
-# Example: [1, 3, 5] = 1 msg copy, phir 3 msg copy, phir 5 msg copy, phir gali.
+# Pattern: Kitni baar copy karega, phir gali dega.
 PATTERN = [1, 3, 5, 2, 4] 
 
-# --- INTERNAL STATE ---
+# --- STATE ---
 pattern_index = 0
 messages_to_copy = PATTERN[0]
 current_count = 0
@@ -32,13 +31,14 @@ current_count = 0
 @bot.event
 async def on_ready():
     print(f"Bot is ready! Logged in as: {bot.user}")
-    print(f"Connected to server: {bot.guilds[0].name if bot.guilds else 'No servers'}")
+    # Self bot hone ki wajah se ye confirm karta hai ki wo user account hai
+    print(f"User ID: {bot.user.id}")
 
 @bot.event
 async def on_message(message):
     global current_count, pattern_index, messages_to_copy
 
-    # Bot khud ka message copy na kare
+    # Agar message khud ka hai toh ignore kar
     if message.author == bot.user:
         return
 
@@ -66,8 +66,11 @@ async def on_message(message):
         current_count = 0
 
 if __name__ == "__main__":
-    token = os.getenv('BOT_TOKEN')
+    # Ab hum 'SELF_TOKEN' padh rahe hain
+    token = os.getenv('SELF_TOKEN')
     if not token:
-        print("Error: BOT_TOKEN environment variable nahi mila!")
+        print("Error: SELF_TOKEN environment variable nahi mila!")
     else:
-        bot.run(token)
+        # Self bot login ke liye 'login' method use karein, 'run' nahi
+        # Kyunki 'run' bot ke liye optimized hai, 'login' user ke liye
+        bot.run(token, log_level=30) # 30 means WARNING level, taaki spam na ho
